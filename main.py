@@ -23,3 +23,9 @@ class KafkaProducerWrapper:
         self.producer.produce(topic, message)
         self.producer.poll(0)
 
+def fetch_stock_data():
+    url=f"{base_url}stocks?apikey={api_key}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json().get("data", [])
+    return []
