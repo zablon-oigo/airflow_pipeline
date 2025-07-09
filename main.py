@@ -29,3 +29,20 @@ def fetch_stock_data():
     if response.status_code == 200:
         return response.json().get("data", [])
     return []
+
+
+def batch_send_to_kafka():
+    producer = KafkaProducerWrapper()
+    data = fetch_stock_data()
+    batch_size = 100
+    for i in range(0, len(data), batch_size):
+        batch = data[i:i+batch_size]
+        batch_json = json.dumps(batch).encode('utf-8')
+        encoded = base64.b64encode(batch_json).decode('utf-8')
+        producer.send("finance1", encoded)
+        print(f"Sent batch {i//batch_size + 1}")
+        time.sleep(1)  
+
+if __name__ == "__main__":
+    batch_send_to_kafka()
+    
