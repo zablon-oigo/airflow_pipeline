@@ -18,3 +18,8 @@ s3 = boto3.client(
 )
 BUCKET = os.getenv("Bucket")
 
+def upload_to_s3_csv(batch_data, batch_num):
+    csv_buffer = StringIO()
+    writer = csv.DictWriter(csv_buffer, fieldnames=batch_data[0].keys())
+    writer.writeheader()
+    writer.writerows(batch_data)
