@@ -23,3 +23,7 @@ def upload_to_s3_csv(batch_data, batch_num):
     writer = csv.DictWriter(csv_buffer, fieldnames=batch_data[0].keys())
     writer.writeheader()
     writer.writerows(batch_data)
+
+    now = datetime.utcnow()
+    folder = now.strftime('%Y/%m/%d')
+    filename = f"{folder}/stocks_batch_{batch_num}.csv"
