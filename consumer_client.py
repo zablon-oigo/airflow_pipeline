@@ -27,3 +27,10 @@ def upload_to_s3_csv(batch_data, batch_num):
     now = datetime.utcnow()
     folder = now.strftime('%Y/%m/%d')
     filename = f"{folder}/stocks_batch_{batch_num}.csv"
+
+    s3.put_object(
+        Bucket=BUCKET,
+        Key=filename,
+        Body=csv_buffer.getvalue()
+    )
+    print(f"Uploaded batch {batch_num} to {filename}")
