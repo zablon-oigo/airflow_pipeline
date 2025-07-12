@@ -34,3 +34,18 @@ def upload_to_s3_csv(batch_data, batch_num):
         Body=csv_buffer.getvalue()
     )
     print(f"Uploaded batch {batch_num} to {filename}")
+
+
+def start_consumer():
+    consumer = Consumer({
+        'bootstrap.servers': os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        'security.protocol': 'SASL_SSL',
+        'sasl.mechanisms': 'PLAIN',
+        'sasl.username': os.getenv("KAFKA_API_KEY"),
+        'sasl.password': os.getenv("KAFKA_API_SECRET"),
+        'group.id': 'finance-group',
+        'auto.offset.reset': 'earliest'
+    })
+
+    consumer.subscribe(['finance1'])
+
