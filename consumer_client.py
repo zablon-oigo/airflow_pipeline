@@ -49,3 +49,27 @@ def start_consumer():
 
     consumer.subscribe(['finance1'])
 
+    batch_count = 0
+    try:
+        while True:
+            msg = consumer.poll(1.0)
+            if msg is None:
+                continue
+            if msg.error():
+                print("Consumer error:", msg.error())
+                continue
+
+            encoded_data = msg.value().decode('utf-8')
+            decoded_bytes = base64.b64decode(encoded_data)
+            batch_data = json.loads(decoded_bytes)
+
+            batch_count += 1
+            upload_to_s3_csv(batch_data, batch_count)
+
+    except KeyboardInterrupt:
+        pass
+    finally:
+        consumer.close()
+
+if __name__ == "__main__":
+    start_consumer()
