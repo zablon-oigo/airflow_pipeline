@@ -42,3 +42,14 @@ def load_csv_from_s3_to_snowflake():
         """)
         print("Data loaded successfully.")
 
+    except Exception as e:
+        print("Error:", e)
+
+    finally:
+        if cs:
+            cs.close()
+        if ctx:
+            ctx.close()
+
+if __name__ == "__main__":
+    load_csv_from_s3_to_snowflake()
