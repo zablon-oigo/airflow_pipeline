@@ -26,3 +26,19 @@ def load_csv_from_s3_to_snowflake():
             schema=SNOWFLAKE_SCHEMA
         )
         cs = ctx.cursor()
+
+        print("Checking files in S3 stage...")
+        cs.execute(f"LIST @{SNOWFLAKE_STAGE}")
+        for row in cs.fetchall():
+            print(row[0])
+
+        print(f"\nLoading data into {SNOWFLAKE_TABLE}...")
+        cs.execute(f"""
+            COPY INTO {SNOWFLAKE_TABLE}
+            FROM @{SNOWFLAKE_STAGE}
+            FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '\"' SKIP_HEADER = 1)
+            PATTERN='.*\\.csv'
+            ON_ERROR = 'CONTINUE'
+        """)
+        print("Data loaded successfully.")
+
