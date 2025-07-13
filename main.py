@@ -35,13 +35,20 @@ def batch_send_to_kafka():
     producer = KafkaProducerWrapper()
     data = fetch_stock_data()
     batch_size = 100
-    for i in range(0, len(data), batch_size):
-        batch = data[i:i+batch_size]
+    selected_fields = ["symbol", "name", "currency", "exchange", "mic_code", "country", "figi_code", "cfi_code"]
+
+    filtered_data = [
+        {field: stock.get(field) for field in selected_fields}
+        for stock in data
+    ]
+
+    for i in range(0, len(filtered_data), batch_size):
+        batch = filtered_data[i:i + batch_size]
         batch_json = json.dumps(batch).encode('utf-8')
         encoded = base64.b64encode(batch_json).decode('utf-8')
         producer.send("finance1", encoded)
-        print(f"Sent batch {i//batch_size + 1}")
-        time.sleep(1)  
+        print(f"Sent batch {i // batch_size + 1}")
+        time.sleep(1)
 
 if __name__ == "__main__":
     batch_send_to_kafka()
